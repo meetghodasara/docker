@@ -47,6 +47,9 @@ services:
     volumes:
       - amqpdata:/var/lib/rabbitmq
     restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   opencti:
     image: opencti/platform:6.2.7
     environment:
@@ -183,10 +186,22 @@ services:
     restart: always
     depends_on:
       - opencti
-
+  myconnector:
+    image: myconnector_myconnector
+    environment:
+      - CONNECTOR_NAME=myconnector
+      - CONNECTOR_SCOPE=stix2
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - CONNECTOR_ID=2f3558fc-6eb7-413f-9ae0-5cab8a38cbab
+      - CONNECTOR_CONFIDENCE_LEVEL=100 
+      - CONNECTOR_LOG_LEVEL=info
+      - CONNECTOR_RUN_EVERY=60s
+    restart: always
+    depends_on:
+      - opencti  
 volumes:
   esdata:
   s3data:
   redisdata:
   amqpdata:
-
